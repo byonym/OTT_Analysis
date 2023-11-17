@@ -1,0 +1,619 @@
+---
+title: "APAN Project Proposal - Group 4"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    theme: cerulean
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = F, warning= FALSE, collapse = TRUE)
+```
+
+<script >
+$(document).ready(function() {
+
+  $chunks = $('.fold');
+
+  $chunks.each(function () {
+
+    // add button to source code chunks
+    if ( $(this).hasClass('s') ) {
+      $('pre.r', this).prepend("<div class=\"showopt\">Show Code and Output</div><br style=\"line-height:22px;\"/>");
+      $('pre.r', this).children('code').attr('class', 'folded');
+    }
+
+    // add button to output chunks
+    if ( $(this).hasClass('o') ) {
+      $('pre:not(.r)', this).has('code').prepend("<div class=\"showopt\">Show Output</div><br style=\"line-height:22px;\"/>");
+      $('pre:not(.r)', this).children('code:not(r)').addClass('folded');
+
+      // add button to plots
+      $(this).find('img').wrap('<pre class=\"plot\"></pre>');
+      $('pre.plot', this).prepend("<div class=\"showopt\">Show Plot</div><br style=\"line-height:22px;\"/>");
+      $('pre.plot', this).children('img').addClass('folded');
+
+    }
+  });
+
+  // hide all chunks when document is loaded
+  $('.folded').css('display', 'none')
+
+  // function to toggle the visibility
+  $('.showopt').click(function() {
+    var label = $(this).html();
+    if (label.indexOf("Show") >= 0) {
+      $(this).html(label.replace("Show", "Hide"));
+    } else {
+      $(this).html(label.replace("Hide", "Show"));
+    }
+    $(this).siblings('code, img').slideToggle('fast', 'swing');
+  });
+});
+
+</script>
+<style>
+.showopt {
+  background-color: #004c93;
+  color: #FFFFFF; 
+  width: 180px;
+  height: 20px;
+  text-align: center;
+  vertical-align: middle !important;
+  float: right;
+  font-family: sans-serif;
+  border-radius: 8px;
+}
+
+.showopt:hover {
+    background-color: #dfe4f2;
+    color: #004c93;
+}
+
+pre.plot {
+  background-color: white !important;
+}
+
+</style>
+
+# Research Problems
+
+The number of users on Over-The-Top (OTT) platforms has been steadily increasing, reaching 3,507 million users in 2023 according to the research conducted by Statista (Statista Research Department, 2023). However, this growth has also led to a highly competitive landscape among popular platforms such as Netflix, Disney+, and Amazon Prime. The competitive nature of the market is evident from the report by Statista (2023), which indicates a decrease in Netflix's user growth rate over the years, suggesting the need for platforms to differentiate themselves in terms of content and user experience.
+
+According to a comparative study by R. Sridevi (2023), people in the survey prefer wider range of content and various language choices. In order to understand consumers’ decisions whether to subscribe to OTT platform or not, the research by S. Nagaraj et al found that movie quality which can be referred by the higher rating is one of the five factors significantly influence the decision to retain on the service. Most OTT services are using content-based recommender system based on movie popularity using resources from public reviews such as IMDB (S. Sahu et al., 2022) Considering the proliferation of new OTT platforms and the fact that users tend to subscribe to multiple platforms it is important to know which platform is the best in delivering popular movies and viewers express different tastes in films, it is important to identify which categories have received the highest ratings and understand the factors that drive interest profit rises again. 
+
+In addition, when making decisions about which films to watch, viewers often rely on the information presented in the film title or thumbnail (Kauffmann et al., 2019). However, the extent to which the story description influences viewers' decision-making process remains unclear. Understanding the impact of story content on viewers' decisions is crucial for OTT platforms to effectively communicate the appeal of their content to potential customers. This research aims to provide valuable insights that will help platforms attract and retain customers by offering more engaging user experiences. Additionally, from the customer's perspective, this research will analyze the data and determine which platform offers the highest movie ratings, providing guidance on the most worthwhile platform to choose.
+
+
+
+# Literature Review 
+
+*“Factors affecting consumers’ willingness to subscribe to over-the-top (OTT) video streaming services in India”*
+
+This literature review summarizes a study that focuses on understanding consumers' decisions whether to subscribe to Over-the-Top (OTT) video streaming services or not. The research aims to identify the factors influencing these subscription decisions and provide insights for OTT service providers by collecting data from 168 participants through snowball sampling and 300 participants through Mturk. Consumers were categorized into three groups based on their subscription preferences. Fourteen reasons for subscribing and eleven reasons for not subscribing to OTT services were identified. Exploratory Factor Analysis revealed five factors, including content, convenience, features, price, and quality. Logistic regression analysis was conducted to examine the impact of these factors and demographic variables on subscription decisions. The findings indicate that all five factors significantly influenced consumers' decisions, with price having an inverse effect. Household structure emerged as a major influencer, along with age, occupation, and education.
+
+*“Comparative Analysis of Clustering Techniques for Movie Recommendation”*
+
+The paper implemented a movie recommendation system that utilizes clustering algorithms to provide users with a more diverse selection of movies based on their preferences. The study aims to compare different clustering algorithms, including K-means, Agglomerative, Birch, and Mean-shift, in terms of their effectiveness in forming clusters of similar movies. The proposed method focuses on using selective features of the movie dataset and explores the significance and novelty of introducing variety in movie recommendations instead of relying solely on attributes such as cast, director, and genre using k-mean cluster. The results indicate that different algorithms handle stray data points differently and that feature combinations yield varying outputs, allowing users to discover similar movies based on different attributes. Overall, the study highlights the potential of clustering techniques in enhancing movie recommendation systems and accommodating the subjective nature of individual movie preferences.
+
+*“Effects of Emotional State on Decision Making Time”*
+
+The research investigated the effects of emotional states (happiness and sadness) on decision-making time involving first-year college students who watched either a happy or a sad film. Both groups were then asked to answer a set of dilemma questions to test their decision-making process. The findings revealed that individuals who watched a happy film made decisions faster compared to those who watched a sad film, suggesting that sadness can influence decision-making by coloring the content of thoughts and slowing down information processing. On the other hand, individuals in a positive-affect condition demonstrated less confusion in their decision process and engaged in early information processing for decision-making. These results align with theories and concepts from emotion research, highlighting the influence of emotions on decision-making at both individual and group levels.
+
+# Research Questions 
+
+- What are the characteristics (Duration, Age Group Restriction, IMDB Rating) of each movie cluster after clustering them?
+
+
+- Which OTT platform (Netflix, Disney+, Amazon Prime) has the highest proportion of movies on the top IMDB rating cluster?
+
+
+- Do more positive sentiments used in the movie descriptions (Sentiment Score) have a higher IMDB rating?
+
+
+# Raw Data
+
+The data we are using for the project was collected from 4 different sources : Disney, Amazon Prime, Netflix and IMDB. 
+There were a total of 6 files; amazon_prime_titles.csv, disney_plus_titles.csv, netflix_title.csv, imdb_ratings.csv,  imdb_with_movie_title_and_imdbid_data.csv, and afinn.csv.
+The raw data files consisted of the list of movies that are on each OTT platform (Netflix, Amazon Prime and Disney Plus) and IMDB movie titles and ratings on a separate file. Afinn.csv was used as a dictionary for sentiment analysis.
+
+
+# Pre-Processing
+
+The five files had to be merged in order to make a final dataset for analysis. The main goal was to make rows with a single movie title with all the related columns with an imdb rating. The following steps had to be performed in order to make a dataset suitable for our research.
+
+First, the movie titles from Netflix, Amazon Prime and Disney Plus were all merged by movie title. There were movies that were on more than one OTT platforms, thus a column for each OTT platform was created, indicating whether a movie was on its platform or not. 
+
+Second, the rating, or the minimum age for watching movies had to be standardized. There were different standards used for different platforms and countries, and these were standardized into categorical variables. 
+
+Third, the IMDB data had to be merged with the combined file (Netflix, Amazon Prime and Disney Plus). Left join was used to merge the IMDB data with the combined file. Each row of the merged dataset had the movie title, platform, minimum age, duration, movie category, plot description and IMDB rating. The movies with a NA rating were deleted. If the movie had missing values for age group, rating and duration, they were imputed using the mice package from R.
+
+Finally, using the text data of movie description, a sentiment score was calculated. With the positive and negative word dictionary from Affin.csv, a sentiment score for each movie was calculated and added as a column for each movie.
+
+
+# Variable Description
+
+**movie_title** : Title of movie
+
+
+**Duration** : Duration of movie, scaled
+
+
+**min_age_group**: Minimum age to watch the title
+
+
+**movie_description** : Plot (summary) of movie 
+
+
+**netflix_movie** : 1 if on Netflix, 0 if not
+
+
+**prime_movie** : 1 if on Amazon Prime, 0 if not
+
+
+**disney_movie** : 1 if on Disney Plus, 0 if not
+
+
+**rating** : IMDB rating of movie
+
+
+**reviewSentiment** :  An average sentiment score based on the "afinn" dictionary positive/negative words. Each word has a score depending on the variable.
+
+
+# Setup
+
+
+
+Loading Required packages
+<div class="fold s o">
+```{r }
+rm(list = ls())
+library(tidyverse)
+library(dplyr)
+library(mice)
+library(tidytext)
+library(ggplot2)
+library(scales)
+library(ggparliament)
+```
+
+</div>
+
+## 1. Data sets loading 
+
+We have combined 5 different datasets to get the final dataset. The datasets which are involved in the data-preprocessing are:
+- Amazon.csv (it contains all the movies titles and its corresponding directors, cast, rating, age_group, country (in which it was launched), duration, description, rating, show_id, movie type (movie/tv show or documentary) which are available on prime).
+- Netflix (it contains all the movies titles and its corresponding directors, cast, rating, age_group, country (in which it was launched), duration, description, rating, show_id, movie type (movie/tv show or documentary) which are available on Netflix).
+
+- Disney+.csv (it contains all the movies titles and its corresponding directors, cast, rating, age_group, country (in which it was launched), duration, description, rating, show_id, movie type (movie/tv show or documentary) which are available on Disney+).
+
+- IMDB_movie_details.csv (it contains the details of the IMDB ID and its corresponding move title)
+
+- IMDB_rating.csv (it contains details of movie titles and its corresponding rating from multiple users)
+
+<div class="fold s o">
+```{r}
+# Creating netflix data set
+netflix_data_set = read_csv("data_sets/netflix_titles.csv")
+colnames(netflix_data_set) = paste0("netflix_",colnames(netflix_data_set))
+names(netflix_data_set)[names(netflix_data_set) == "netflix_title"] <- "movie_title"
+
+#Mutating "netflix" platform column so that when we combine multiple datasets we will know which movie was screened on which OTT platform
+netflix_data_set <- netflix_data_set %>%
+  mutate(netflix_movie = "netflix")
+
+
+
+
+#Creating prime data set
+prime_data_set = read_csv("data_sets/amazon_prime_titles.csv")
+colnames(prime_data_set) = paste0("prime_",colnames(prime_data_set))
+names(prime_data_set)[names(prime_data_set) == "prime_title"] <- "movie_title"
+
+#Mutating "prime" platform column so that when we combine multiple datasets we will know which movie was screened on which OTT platform
+prime_data_set <- prime_data_set %>%
+  mutate(prime_movie = "prime")
+
+#Creating disney data set
+disney_data_set = read_csv("data_sets/disney_plus_titles.csv")
+colnames(disney_data_set) = paste0("disney_",colnames(disney_data_set))
+names(disney_data_set)[names(disney_data_set) == "disney_title"] <- "movie_title"
+
+#Mutating "disney" platform column so that when we combine multiple datasets we will know which movie was screened on which OTT platform
+disney_data_set <- disney_data_set %>%
+  mutate(disney_movie = "disney")
+
+```
+</div>
+
+## 2. Merging data sets (netflix, disney, prime)
+
+In here we are merging the data sets of netflix, disney+, and Amazon prime movies by Title using full join. This combined dataset will later be combined with IMDB movie rating dataset to create out final dataset for our analysis.
+
+<div class="fold s o">
+```{r}
+merged_data <- merge(netflix_data_set, prime_data_set, by = c("movie_title"), all = TRUE)
+merged_data = merge(merged_data,disney_data_set, by = c("movie_title"), all = TRUE)
+dim(merged_data)
+colnames(merged_data)
+unique(merged_data["netflix_duration"])
+
+subset_merged_data = subset(merged_data, select = -c(netflix_show_id, netflix_type, netflix_date_added, netflix_release_year, prime_show_id, prime_type,
+prime_date_added, prime_release_year, disney_show_id, disney_type, disney_date_added, disney_release_year))
+head(subset_merged_data)
+colnames(subset_merged_data)
+table(subset_merged_data$disney_rating)
+
+cbind(subset_merged_data$prime_movie,subset_merged_data$disney_movie, subset_merged_data$netflix_movie)
+
+```
+</div>
+## 3. Cleaning the data sets
+
+### __3.1 Cleaning/standardizing "min_age_group" __
+
+In this we will be cleaning min_age_group column. Different OTT platform used different min_age rating system for the movie. For example Netflix used NC-17 which is same as Prime+ movie which rated it as TV_MA. And also in some places it was mentioned 16+ and in other rows it is AGE_16. And in few rows data was mis-written as 74 min, 84 mins etc.. which is not min_age for movie to be watched, so we made that as NA. In order to normalize/get everything to the same catergory like AGE_16_PLUS and 16+ to 17 years (similarly for other min_age data) so that we can have the data cleaned up.
+<div class="fold s o">
+```{r}
+
+modified_rating_subset <- subset_merged_data %>%
+  mutate(netflix_rating = ifelse(
+    netflix_rating %in% c("74 min", "84 min", "66 min", NA), NA,
+    ifelse(netflix_rating == "TV-PG", 10,
+    ifelse(netflix_rating == "TV-G", 0,
+    ifelse(netflix_rating == "ALL", 0,
+    ifelse(netflix_rating == "TV-14", 14,
+    ifelse(netflix_rating == "TV-MA", 17,
+    ifelse(netflix_rating == "NR", 0,
+    ifelse(netflix_rating == "PG-13", 13,
+    ifelse(netflix_rating == "TV-Y", 5,
+    ifelse(netflix_rating == "R", 17,
+    ifelse(netflix_rating == "TV-Y7", 7,
+    ifelse(netflix_rating == "PG", 8,
+    ifelse(netflix_rating == "G", 0,
+    ifelse(netflix_rating == "NC-17", 17,
+    ifelse(netflix_rating == "TV-Y7-FV", 7,
+    ifelse(netflix_rating == "UR", 0,
+    as.integer(netflix_rating)
+    )))))))))))))))
+  ))
+
+modified_rating_subset <- modified_rating_subset %>%
+  mutate(disney_rating = ifelse(
+    disney_rating %in% c("74 min", "84 min", "66 min", NA), NA,
+    ifelse(disney_rating == "TV-PG", 10,
+    ifelse(disney_rating == "TV-G", 0,
+    ifelse(disney_rating == "ALL", 0,
+    ifelse(disney_rating == "TV-14", 14,
+    ifelse(disney_rating == "TV-MA", 17,
+    ifelse(disney_rating == "NR", 0,
+    ifelse(disney_rating == "PG-13", 13,
+    ifelse(disney_rating == "TV-Y", 5,
+    ifelse(disney_rating == "R", 17,
+    ifelse(disney_rating == "TV-Y7", 7,
+    ifelse(disney_rating == "PG", 8,
+    ifelse(disney_rating == "G", 0,
+    ifelse(disney_rating == "NC-17", 17,
+    ifelse(disney_rating == "TV-Y7-FV", 7,
+    ifelse(disney_rating == "UR", 0,
+    as.integer(disney_rating)
+    )))))))))))))))
+  ))
+
+modified_rating_subset <- modified_rating_subset %>%
+  mutate(prime_rating = ifelse(
+    prime_rating %in% c("74 min", "84 min", "66 min", NA), NA,
+    ifelse(prime_rating == "TV-PG", 10,
+    ifelse(prime_rating == "TV-G", 0,
+    ifelse(prime_rating == "ALL", 0,
+    ifelse(prime_rating == "TV-14", 14,
+    ifelse(prime_rating == "TV-MA", 17,
+    ifelse(prime_rating == "NR", 0,
+    ifelse(prime_rating %in% c("13+", "PG-13"), 13,
+    ifelse(prime_rating == "TV-Y", 5,
+    ifelse(prime_rating %in% c("R", "TV-MA", "NC-17", "AGES_18_", "18+"), 17,
+    ifelse(prime_rating %in% c("TV-PG", "7+", "TV-Y", "TV-Y7"), 7,
+    ifelse(prime_rating == "PG", 8,
+    ifelse(prime_rating %in% c("ALL", "TV-G", "G", "UNRATED", "TV-NR", "NR", "ALL_AGES", "NOT_RATE", "UR"), 0,
+    ifelse(prime_rating %in% c("16+", "AGES_16_", "16"), 16,
+    ifelse(prime_rating == "TV-Y7-FV", 7,
+    ifelse(prime_rating == "UR", 0,
+    as.integer(prime_rating)
+    )))))))))))))))))
+
+# printing out the unique min_age_group to see if there are anything missed out
+unique(modified_rating_subset$prime_rating)
+unique(modified_rating_subset$disney_rating)
+unique(modified_rating_subset$netflix_rating)
+
+# combining the data together under one column.
+modified_rating_subset <- modified_rating_subset %>%
+  mutate(prime_rating = coalesce(prime_rating, disney_rating, netflix_rating))
+
+# since we have got all the movie ratings under one column we will be removing the other ratings column
+rating_unified_subset = subset(modified_rating_subset, select = -c(netflix_rating,disney_rating))
+colnames(rating_unified_subset)
+
+# changing the name of the oclum to min_age_group
+names(rating_unified_subset)[names(rating_unified_subset) == "prime_rating"] <- "min_age_group"
+
+rating_unified_subset$min_age_group=as.character(rating_unified_subset$min_age_group)
+rating_unified_subset$min_age_group=as.factor(rating_unified_subset$min_age_group)
+```
+</div>
+### __3.2 Cleaning "duration" __
+
+In this we will be cleaning the duration column. The duration column consists of numeric along with character data. For example it has 198 min, 100 min, or 2 seasons etc.. So in this section we have extracted only the numeric data from it and cleaned the column. 
+
+<div class="fold s o">
+```{r}
+# Cleaning Duration
+unified_duration = rating_unified_subset %>% mutate(prime_duration = coalesce(prime_duration, netflix_duration, disney_duration))
+table(unified_duration[,"prime_duration"])
+
+# combining the data together under one column.
+unified_duration = subset(unified_duration, select = -c(netflix_duration,disney_duration))
+names(unified_duration)[names(unified_duration) == "prime_duration"] <- "duration"
+
+# cleaning up seasons data
+unified_duration <- unified_duration[!grepl("Season", unified_duration$duration), ]
+unified_duration$duration = parse_number(unified_duration$duration)
+```
+</div>
+
+### __3.3 Cleaning "description" __
+
+The description column has data about the movie, like the summary of the movie. Some movies are telecast-ed in some OTT platforms and may not be one Disney+, so the row data for the Disney+ will NA. So as process of cleaning the data, will be gathering description of the movie column under one column.
+<div class="fold s o">
+```{r}
+# cleaning up Movie Description by combining them into one column
+unified_description <- unified_duration %>%
+  mutate(prime_description = coalesce(netflix_description, disney_description, prime_description))
+
+# removing the remaining fields as their data is already combined into one single column.
+unified_description = subset(unified_description, select = -c(netflix_description,disney_description))
+names(unified_description)[names(unified_description) == "prime_description"] <- "movie_description"
+```
+</div>
+### __3.4 Cleaning "listed_in" (movie/genre type) __
+
+The genre column has data about the movie category, like if the movie is drama or action etc... Some movies are telecast-ed in some OTT platforms and may not be one Disney+, so the row data for the Disney+ will NA. So as process of cleaning the data, will be gathering genre type of the movie column under one column.
+
+<div class="fold s o">
+```{r}
+
+# cleaning listed in (category of the movie/genre type) by combining them into one column
+unified_category <- unified_description %>%
+  mutate(disney_listed_in = coalesce(netflix_listed_in, prime_listed_in, disney_listed_in))
+
+# removing the remaining fields as their data is already combined into one single column.
+unified_category = subset(unified_category, select = -c(netflix_listed_in,prime_listed_in))
+names(unified_category)[names(unified_category) == "disney_listed_in"] <- "movie_category"
+```
+</div>
+### __3.5 Subset of relevant columns __
+
+Here we will be subsetting the required columns which are required for our final dataset which is then used for our further analysis to answer our research questions.
+<div class="fold s o">
+```{r}
+
+# Subsetting only the required columns which are required for our final dataset.
+unified_category <- subset(unified_category, select= c( movie_title,min_age_group, duration, movie_description, netflix_movie, prime_movie, disney_movie))
+```
+</div>
+
+## 4. Creating SentimentScore (positive/negative)
+
+In this we will be creating sentiment score for description of the Movie. In this we will be using the sentiment algorithm on the movie plot and then derive the score based on the movie plot. This scores are later correlated with the IMDB rating which will help us to answer the research question "whether positive movies have more IMDB rating?"
+<div class="fold s o">
+```{r}
+#Reading afinn(sentiments) dictionary
+afinn = read.csv('data_sets/Afinn.csv')
+
+#Getting mean/average sentiment score by movie_title
+sentiment_data = unified_category %>%
+  select(movie_title,movie_description)%>%
+  group_by(movie_title)%>%
+  unnest_tokens(output=word,input=movie_description)%>%
+  inner_join(afinn)%>%
+   summarize(reviewSentiment = mean(value))
+#Joining sentiment_data with all data (unified_category)
+unified_category = left_join(unified_category, sentiment_data, by = "movie_title")
+
+#Counting NA values for sentiment
+sum(is.na(unified_category$reviewSentiment))
+colnames(unified_category)
+```
+</div>
+## 5. Merging IMDB data
+
+Here we will be pre-processing data from 2 different IMDB data sets and we will be merging these 2 data sets. These datasets are described as follows:
+- imdb_with_movie_title_and_imdbid_data.tsv (it contains the details of the IMDB ID and its corresponding move title)
+
+- imdb_rating_data.tsv (it contains details of movie titles, movie type(movie or tvmovie or tvseries) and its corresponding rating from multiple users)
+
+As part of data preprocessing we will verify if there are any anomalies in the dataset and do data cleaning as required.
+
+The following procedure is followed as part of data pre-processing of IMDB data:
+
+- Reading imdb_rating_data.tsv and imdb_with_movie_title_and_imdbid_data.tsv files
+- Filtering only movies and series data followed by then sub-setting imdb_ids and corresponding movie titles
+- We then combine both the dataframes imdb_titles and imdb_rating using left_join by using tconst (which is the unique ID)
+- Later will take the average of multiple rating if given by user for the same movie multiple times and then averaging them to get the rating for the movie. For missing rating we later imputed the required values.
+
+- After that we will be Sub-setting the data frame with the required columns "title" and "rating" which will later be used to combine with the data frame (which contains the movies from OTT platforms)
+
+- Later we will be Merging IMD_Final data frame with that of the movie data set
+
+
+<div class="fold s o">
+```{r}
+#Read imdb rating
+imdb_rating<- read.delim("data_sets/imdb_rating_data.tsv", sep = "\t")
+head(imdb_rating)
+
+#Loading imdb titles data
+imdb_data1 <- read.delim("data_sets/imdb_with_movie_title_and_imdbid_data.tsv", sep = "\t")
+head(imdb_data1)
+
+#Filtering in only movies and series
+imdb_data1 <- imdb_data1 %>%
+  filter(titleType %in% c("movie", "tvMovie", "tvSeries"))
+
+
+#Filtering imdb titles
+imdb_titles <- imdb_data1[c("tconst", "primaryTitle")]
+head(imdb_titles)
+
+#Joining imdb datasets
+imdb_final_combine = left_join(imdb_titles, imdb_rating, by = "tconst")
+colnames(imdb_final_combine)
+dim(imdb_final_combine)
+
+# checking the number of rows
+nrow(imdb_final_combine)
+sum(!complete.cases(imdb_final_combine))
+sum(complete.cases(imdb_final_combine))
+
+# values <- c(sum(!complete.cases(imdb_final_combine)),sum(complete.cases(imdb_final_combine)))
+# 
+# # Define the labels for each value
+# labels <- c("rows with no NA values", "rows with NA values")
+# 
+# # Create the pie chart
+# pie(values,labels = sprintf("%s\n(%s)", labels, percent(values/sum(values))), main="Percentage of NA rows before imputation")
+
+#Taking the average/mean rating for titles with multiple ratings
+imdb_final <- imdb_final_combine %>%
+  select(primaryTitle, averageRating, tconst) %>%
+  group_by(primaryTitle) %>%
+  summarize(rating = mean(averageRating, na.rm = T))
+dim(imdb_final)
+colSums(is.na(imdb_final))
+# imputing missing values in rating
+imdb_final = complete(mice(imdb_final, method = "pmm"))
+
+#number of NA ratings after imputation
+sum(!complete.cases(imdb_final))
+
+#Selecting 'title' and 'rating' 
+imdb_final = imdb_final%>% select (movie_title=primaryTitle,rating)
+
+#Merging merged dataset and imdb data
+merged_data_imdb = left_join(unified_category, imdb_final, by = "movie_title")
+colnames(merged_data_imdb)
+```
+</div>
+
+## 6. Final Step of data cleaning
+
+After combining the dataset we will be checking and removing any NA values if there are any. And later we will be scaling the numeric data like "rating" and "duration" for our further analysis.
+<div class="fold s">
+
+```{r,results='hide',warning=FALSE}
+#Deleting all titles with NA ratings
+final_imdb_data <- merged_data_imdb 
+#Rounding rating to one decimal
+final_imdb_data = final_imdb_data%>%mutate(rating = round(rating, 1))
+
+# converting the categorical variables to numeric. 1- means the movie is telecasted on that perticular OTT platform, 0 means it is not telecasted on the corresponding OTT platform.
+final_imdb_data = final_imdb_data %>% mutate(prime_movie = if_else(prime_movie == "prime", 1, 0))
+final_imdb_data = final_imdb_data %>% mutate(disney_movie = if_else(disney_movie == "disney", 1, 0))
+final_imdb_data = final_imdb_data %>% mutate(netflix_movie = if_else(netflix_movie == "netflix", 1, 0))
+
+# subsetting the data frame with the required columns which we need for our analysis
+final_imdb_data = final_imdb_data %>% select(movie_title,min_age_group, duration, movie_description, netflix_movie, prime_movie, disney_movie, rating, reviewSentiment)
+
+# If there are ny NAs found under the OTT platform column names we will consider that the movie is not te
+final_imdb_data$prime_movie[is.na(final_imdb_data$prime_movie)] <- 0
+final_imdb_data$disney_movie[is.na(final_imdb_data$disney_movie)] <- 0
+final_imdb_data$netflix_movie[is.na(final_imdb_data$netflix_movie)] <- 0
+# imputing missing values for age group, rating, duration
+final_imdb_data <- complete(mice(data = final_imdb_data, method = "pmm"))
+# checking the final column names
+colnames(final_imdb_data)
+# checking the data
+head(final_imdb_data)
+# checking if there are any na values on the final dataset
+colSums(is.na(final_imdb_data))
+
+# scaling the rating and duration data 
+final_imdb_data$rating = scale(final_imdb_data$rating)
+final_imdb_data$duration = scale(final_imdb_data$duration)
+# final_imdb_data$rating
+```
+</div>
+
+
+
+## 7.Exploring Dataset
+
+Here we are exploring our final data set which we have derived by combining 5 different dataset and after utilizing multiple pre-processing techniques
+
+<div class="fold s">
+```{r collapse = T}
+# Total rows
+nrow(final_imdb_data)
+
+# Proportion of movies per platform
+netflix = final_imdb_data[final_imdb_data$netflix_movie==1,]
+nrow(netflix)
+
+prime = final_imdb_data[final_imdb_data$prime_movie==1,]
+nrow(prime)
+
+disney = final_imdb_data[final_imdb_data$disney_movie==1,]
+nrow(disney)
+
+
+values <- c(6150,7814,1051)
+
+# Define the labels for each value
+labels <- c("Netflix", "Amazon Prime", "Disney Plus")
+
+# Create the pie chart
+pie(values,labels = sprintf("%s\n(%s)", labels, percent(values/sum(values))), main='Percentage of movies per platform')
+
+```
+
+</div>
+
+<div class="fold s">
+
+
+</div>
+
+# Exporting data as csv
+
+Finally the final dataset is exported to a csv file
+<div class="fold s o">
+
+```{r}
+write.csv(final_imdb_data, "group4_final_data.csv", row.names = FALSE)
+```
+</div>
+
+# References
+
+
+Aditya, T. S., Rajaraman, K., & Subashini, M. M. (2018). Comparative Analysis of Clustering Techniques for Movie Recommendation. MATEC Web Conf., 225, 02004. https://doi.org/10.1051/matecconf/201822502004. 
+
+
+Duque, M. J., Turla, C., & Evangelista, L. (2013). Effects of emotional state on decision making time. Procedia - Social and Behavioral Sciences, 97, 137-146. ISSN 1877-0428. https://www.sciencedirect.com/science/article/pii/S1877042813036598 
+
+
+Kauffmann, Peral, Gil, Ferrández, Sellers, & Mora. (2019). Managing Marketing Decision-Making with Sentiment Analysis: An Evaluation of the Main Product Features Using Text Data Mining. Sustainability, 11(15), 4235. MDPI AG. http://dx.doi.org/10.3390/su11154235 
+
+
+Netflix. (April 18, 2023). Number of Netflix paid subscribers worldwide from 1st quarter 2013 to 1st quarter 2023 (in millions) [Graph]. In Statista. Retrieved July 09, 2023, from https://www-statista-com.ezproxy.cul.columbia.edu/statistics/250934/quarterly-number-of-netflix-streaming-subscribers-worldwide/
+
+
+Sahu, S., Kumar, R., Pathan, M. S., Shafi, J., Kumar, Y., & Ijaz, M. F. (2022). Movie Popularity and Target Audience Prediction Using the Content-Based Recommender System. IEEE Access, 10, 42044-42060. doi: 10.1109/ACCESS.2022.3168161 (https://ieeexplore.ieee.org/abstract/document/9758691)
+
+
+Samala Nagaraj, Soumya Singh, and Venkat Reddy Yasa. (2021). Factors affecting consumers’ willingness to subscribe to over-the-top (OTT) video streaming services in India. Technology in Society, 65, 101534. ISSN 0160-791X. https://www.sciencedirect.com/science/article/pii/S0160791X21000099
+
+
+Statista. (June 26, 2023). Number of users of OTT video worldwide from 2018 to 2027 (in millions) [Graph]. In Statista. Retrieved July 09, 2023, from https://www-statista-com.ezproxy.cul.columbia.edu/forecasts/1207843/ott-video-users-worldwide
+
+
